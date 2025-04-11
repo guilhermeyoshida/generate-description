@@ -31,7 +31,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Generate PR Description
-        uses: guilhermeyoshida/generate-description@v0.0.01
+        uses: guilhermeyoshida/generate-description@0.0.1
         with:
           openai_api_key: ${{ secrets.OPENAI_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
