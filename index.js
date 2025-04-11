@@ -1,14 +1,13 @@
 const core = require("@actions/core");
-const github = require("@actions/github");
+const { context, getOctokit } = require("@actions/github");
 const OpenAI = require("openai");
 
 async function run() {
     try {
-        const openaiApiKey = core.getInput("openai_api_key");
-        const promptTemplate = core.getInput("prompt");
-        const octokit = github.getOctokit(core.getInput("github_token"));
+        const openaiApiKey = core.getInput("openai_api_key", { required: true });
+        const promptTemplate = core.getInput("prompt", { required: true });
+        const octokit = getOctokit(core.getInput("github_token", { required: true }));
 
-        const { context } = github;
         const { owner, repo } = context.repo;
         const pull_number = context.payload.pull_request.number;
         if (!pull_number) {
