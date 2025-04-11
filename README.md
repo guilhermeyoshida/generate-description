@@ -4,7 +4,7 @@ This GitHub Action generates a detailed pull request description using OpenAI's 
 
 ## Repository and Version
 
-This action is hosted in the repository [guilhermeyoshida/generate-description](https://github.com/guilhermeyoshida/generate-description) and is currently at version `0.0.1`.
+This action is hosted in the repository [guilhermeyoshida/generate-description](https://github.com/guilhermeyoshida/generate-description) and is currently at version `latest`.
 
 ## Inputs
 
