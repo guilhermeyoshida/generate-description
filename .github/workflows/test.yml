@@ -1,5 +1,9 @@
 name: Test Generate PR Description
 
+permissions:
+  pull-requests: write
+  contents: read
+
 on:
   pull_request:
     types: [opened, edited]
@@ -15,5 +19,5 @@ jobs:
         uses: ./ # Uses the action in the root directory
         with:
           openai_api_key: ${{ secrets.OPENAI_API_KEY }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.GH_TOKEN }}
           prompt: "Provide a detailed analysis of the pull request changes, focusing on the purpose and benefits of the modifications..."
