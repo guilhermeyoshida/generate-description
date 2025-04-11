@@ -47041,56 +47041,54 @@ async function run() {
     try {
         const openaiApiKey = core.getInput("openai_api_key", { required: true });
         const promptTemplate = core.getInput("prompt", { required: true });
-        const octokit = getOctokit(core.getInput("github_token", { required: true }));
+        const token = core.getInput("github_token", { required: true });
+        const octokit = getOctokit(token);
 
         const { owner, repo } = context.repo;
-        const pull_number = context.payload.pull_request.number;
-        if (!pull_number) {
-            const { data: pullRequests } =
-                await octokit.rest.repos.listPullRequestsAssociatedWithCommit({
-                    owner,
-                    repo,
-                    commit_sha: context.sha,
-                });
+        let prNumber = context.payload.pull_request?.number;
+        if (!prNumber) {
+            const { data: pullRequests } = await octokit.rest.repos.listPullRequestsAssociatedWithCommit({
+                owner,
+                repo,
+                commit_sha: context.sha,
+            });
 
             const candidatePullRequests = pullRequests.filter(
-                (pr) =>
-                    context.payload.ref === `refs/heads/${pr.head.ref}` &&
-                    pr.state === "open",
+                (pr) => context.payload.ref === `refs/heads/${pr.head.ref}` && pr.state === "open"
             );
 
-            pull_number = candidatePullRequests?.[0]?.number;
+            prNumber = candidatePullRequests?.[0]?.number;
         }
 
-        if (!pull_number) {
-            setFailed(
-                `No open pull request found for ${context.eventName}, ${context.sha}`,
-            );
+        if (!prNumber) {
+            core.setFailed(`No open pull request found for ${context.eventName}, ${context.sha}`);
             return;
         }
 
-        const { data: pr } = await octokit.rest.pulls.get({
+        const { data } = await octokit.rest.pulls.get({
             owner,
             repo,
-            pull_number: pull_number
+            pull_number: prNumber,
         });
 
+        let body = data.body || "";
+
         const pr_details = {
-            title: pr.title,
-            body: pr.body ? pr.body.substring(0, 500) : "",
+            title: data.title,
+            body: body.substring(0, 500),
             files: (await octokit.paginate(octokit.rest.pulls.listFiles, {
                 owner,
                 repo,
-                pull_number
+                pull_number: prNumber
             })).slice(0, 5),
             commits: (await octokit.paginate(octokit.rest.pulls.listCommits, {
                 owner,
                 repo,
-                pull_number
+                pull_number: prNumber
             })).slice(0, 5)
         };
 
-        console.log(`Pull Request Number: ${pull_number}`);
+        console.log(`Pull Request Number: ${prNumber}`);
         console.log(`Repository: ${owner}/${repo}`);
         console.log(`PR Details: ${JSON.stringify(pr_details)}`);
 
@@ -47105,11 +47103,25 @@ async function run() {
 
         const aiDescription = response.output_text.trim();
 
+        console.log("PR Number:", prNumber);
+        console.log("Owner:", owner);
+        console.log("Repo:", repo);
+
+        if (!prNumber) {
+            console.error("No pull request number found.");
+        }
+
+        // Log the PR body before attempting to modify it
+        console.log("PR Body:", body);
+
+        // Log the output content before updating the PR
+        console.log("Output Content:", aiDescription);
+
         await octokit.rest.pulls.update({
             owner,
             repo,
-            pull_number: pull_number,
-            body: aiDescription
+            body: aiDescription,
+            pull_number: prNumber,
         });
 
         core.setOutput("description", aiDescription);
