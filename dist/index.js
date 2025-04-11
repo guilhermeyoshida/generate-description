@@ -47042,9 +47042,21 @@ async function run() {
         const openaiApiKey = core.getInput("openai_api_key", { required: true });
         const promptTemplate = core.getInput("prompt", { required: true });
         const token = core.getInput("github_token", { required: true });
+
+        core.info("Starting the GitHub Action script execution...");
+        core.info("OpenAI API Key:", openaiApiKey);
+        core.info("Prompt Template:", promptTemplate);
+        core.info("GitHub Token:", token);
+        core.info("GitHub Context:", JSON.stringify(context));
+
         const octokit = getOctokit(token);
 
         const { owner, repo } = context.repo;
+        core.info("Owner:", owner);
+        core.info("Repo:", repo);
+        core.info("SHA:", context.sha);
+        core.info("Event:", context.eventName);
+        core.info("Payload:", JSON.stringify(context.payload));
         let prNumber = context.payload.pull_request?.number;
         if (!prNumber) {
             const { data: pullRequests } = await octokit.rest.repos.listPullRequestsAssociatedWithCommit({
@@ -47059,12 +47071,14 @@ async function run() {
 
             prNumber = candidatePullRequests?.[0]?.number;
         }
+        core.info("Pull Request Number:", prNumber);
 
         if (!prNumber) {
             core.setFailed(`No open pull request found for ${context.eventName}, ${context.sha}`);
             return;
         }
 
+        core.info("Fetching pull request details...");
         const { data } = await octokit.rest.pulls.get({
             owner,
             repo,
@@ -47072,6 +47086,9 @@ async function run() {
         });
 
         let body = data.body || "";
+
+        core.info("Pull Request Details:", JSON.stringify(data));
+        core.info("Pull Request Body:", body);
 
         const pr_details = {
             title: data.title,
@@ -47088,9 +47105,7 @@ async function run() {
             })).slice(0, 5)
         };
 
-        console.log(`Pull Request Number: ${prNumber}`);
-        console.log(`Repository: ${owner}/${repo}`);
-        console.log(`PR Details: ${JSON.stringify(pr_details)}`);
+        core.info("Pull Request Details:", JSON.stringify(pr_details));
 
         const inputPrompt = `${promptTemplate}\n${JSON.stringify(pr_details)}`;
 
@@ -47103,19 +47118,19 @@ async function run() {
 
         const aiDescription = response.output_text.trim();
 
-        console.log("PR Number:", prNumber);
-        console.log("Owner:", owner);
-        console.log("Repo:", repo);
+        core.info("PR Number:", prNumber);
+        core.info("Owner:", owner);
+        core.info("Repo:", repo);
 
         if (!prNumber) {
-            console.error("No pull request number found.");
+            core.error("No pull request number found.");
         }
 
         // Log the PR body before attempting to modify it
-        console.log("PR Body:", body);
+        core.info("PR Body:", body);
 
         // Log the output content before updating the PR
-        console.log("Output Content:", aiDescription);
+        core.info("Output Content:", aiDescription);
 
         await octokit.rest.pulls.update({
             owner,
@@ -47125,6 +47140,17 @@ async function run() {
         });
 
         core.setOutput("description", aiDescription);
+
+        core.info(`PR Number: ${prNumber}`);
+        core.info(`Owner: ${owner}`);
+        core.info(`Repo: ${repo}`);
+
+        if (!prNumber) {
+            core.error("No pull request number found.");
+        }
+
+        core.info(`PR Body: ${body}`);
+        core.info(`Output Content: ${aiDescription}`);
 
     } catch (error) {
         core.setFailed(error.message);
