@@ -1,0 +1,19 @@
+{
+    "pull_request": {
+        "number": 1,
+        "title": "Sample PR",
+        "body": "This is a sample pull request.",
+        "head": {
+            "sha": "abc123"
+        },
+        "base": {
+            "sha": "def456"
+        }
+    },
+    "repository": {
+        "name": "your-repo",
+        "owner": {
+            "login": "your-username"
+        }
+    }
+}

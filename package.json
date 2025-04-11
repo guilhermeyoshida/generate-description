@@ -1,0 +1,25 @@
+{
+  "name": "generate-description",
+  "version": "1.0.0",
+  "description": "This GitHub Action generates a detailed pull request description using OpenAI's GPT-4o model.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "github",
+    "action",
+    "openai",
+    "gpt-4o",
+    "pull request",
+    "description"
+  ],
+  "author": "guilhermeyoshida",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@actions/core": "^1.11.1",
+    "@actions/github": "^6.0.0",
+    "openai": "^4.93.0"
+  }
+}

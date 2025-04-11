@@ -1,0 +1,18 @@
+name: "Generate PR Description"
+description: "Generate a detailed PR description using OpenAI GPT-4o"
+inputs:
+  openai_api_key:
+    description: "OpenAI API Key"
+    required: true
+  github_token:
+    description: "GitHub Token"
+    required: true
+  prompt:
+    description: "Prompt template for generating PR description"
+    required: true
+outputs:
+  description:
+    description: "Generated PR description"
+runs:
+  using: "node20"
+  main: "index.js"

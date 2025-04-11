@@ -1,0 +1,19 @@
+name: Test Generate PR Description
+
+on:
+  pull_request:
+    types: [opened, edited]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Run Generate PR Description
+        uses: ./ # Uses the action in the root directory
+        with:
+          openai_api_key: ${{ secrets.OPENAI_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          prompt: "Provide a detailed analysis of the pull request changes, focusing on the purpose and benefits of the modifications..."
