@@ -18,16 +18,16 @@ async function run() {
                     repo,
                     commit_sha: context.sha,
                 });
-    
+
             const candidatePullRequests = pullRequests.filter(
                 (pr) =>
                     context.payload.ref === `refs/heads/${pr.head.ref}` &&
                     pr.state === "open",
             );
-    
+
             pull_number = candidatePullRequests?.[0]?.number;
         }
-    
+
         if (!pull_number) {
             setFailed(
                 `No open pull request found for ${context.eventName}, ${context.sha}`,
@@ -43,7 +43,7 @@ async function run() {
 
         const pr_details = {
             title: pr.title,
-            body: pr.body.substring(0, 500),
+            body: pr.body ? pr.body.substring(0, 500) : "",
             files: (await octokit.paginate(octokit.rest.pulls.listFiles, {
                 owner,
                 repo,
