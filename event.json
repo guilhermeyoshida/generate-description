@@ -1,19 +1,21 @@
 {
     "pull_request": {
         "number": 1,
-        "title": "Sample PR",
-        "body": "This is a sample pull request.",
+        "title": "Test",
+        "body": null,
         "head": {
-            "sha": "abc123"
+            "sha": "cb8df3ca65c9f8901009a0b38823f338246bd932",
+            "ref": "feat/test-pr"
         },
         "base": {
-            "sha": "def456"
+            "sha": "78d7a5a516816391fce1323b9e10dcdda7931145",
+            "ref": "main"
         }
     },
     "repository": {
-        "name": "your-repo",
+        "name": "generate-description",
         "owner": {
-            "login": "your-username"
+            "login": "guilhermeyoshida"
         }
     }
 }
